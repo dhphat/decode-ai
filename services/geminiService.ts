@@ -23,7 +23,7 @@ export const generateArchaeologyImage = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-1.5-flash', // Standard stable model for image processing
+      model: 'gemini-3-pro-image-preview', // Reverting to original experimental model name
       contents: {
         parts: [
           {

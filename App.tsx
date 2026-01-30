@@ -96,7 +96,14 @@ export default function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // --- Style Navigation ---
+  // --- Style Navigation & PRELOADING ---
+  useEffect(() => {
+    STYLES.forEach(style => {
+      const img = new Image();
+      img.src = style.thumbnail;
+    });
+  }, []);
+
   const nextStyle = () => {
     setCurrentStyleIndex((prev) => (prev + 1) % STYLES.length);
   };
@@ -377,7 +384,7 @@ export default function App() {
             ref={videoRef}
             autoPlay
             playsInline
-            className="absolute top-1/2 left-1/2 min-w-full min-h-full object-cover transform -translate-x-1/2 -translate-y-1/2 scale-x-[-1]"
+            className="w-full h-full object-contain scale-x-[-1]"
           />
           <canvas ref={canvasRef} className="hidden" />
           {countdown !== null && (

@@ -88,9 +88,57 @@ export default function App() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [apiKeyReady, setApiKeyReady] = useState<boolean>(false);
   const [processingStep, setProcessingStep] = useState<string>("");
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingIconIndex, setLoadingIconIndex] = useState(0);
 
-  // New state for Carousel Navigation
+  const LOADING_ICONS = [
+    // Compass
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500"><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></svg>,
+    // Magnifying Glass
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>,
+    // Puzzle Piece
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500"><path d="M19.439 7.85c0-1.571-1.291-2.85-2.85-2.85H15.08c-.036-1.666-1.4-3-3.08-3s-3.044 1.334-3.08 3H7.411c-1.559 0-2.85 1.279-2.85 2.85v1.509c-1.667.036-3 1.4-3 3.08s1.333 3.044 3 3.08v2.503c0 1.571 1.291 2.85 2.85 2.85h1.509c.036 1.667 1.4 3 3.08 3s3.044-1.333 3.08-3h2.503c1.558 0 2.85-1.279 2.85-2.85v-1.509c1.667-.036 3-1.4 3-3.08s-1.333-3.044-3-3.08V7.85z" /></svg>,
+    // Pyramid (Mountain icon with flat top feel)
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500"><path d="M21 20H3L12 4z" /><path d="M12 4v16" /></svg>,
+    // Wind
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500"><path d="M9.59 4.59A2 2 0 1 1 11 8H2" /><path d="M12.59 19.41A2 2 0 1 0 14 16H2" /><path d="M15.59 12.41A2 2 0 1 1 17 9H2" /></svg>,
+    // Sand (Dunes/Waves)
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500"><path d="M2 18c2-3.5 4-3.5 6 0 2 3.5 4 3.5 6 0 2-3.5 4-3.5 6 0" /><path d="M2 12c2-3.5 4-3.5 6 0 2 3.5 4 3.5 6 0 2-3.5 4-3.5 6 0" /></svg>,
+    // Camel (Dinosaur-like placeholder or stylized)
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500"><path d="M18 10h.01" /><path d="M15 10h.01" /><path d="M12 10h.01" /><path d="M2 20h20" /><path d="M4 20v-7a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v7h-2v-4h-2v4h-2v-4H8v4H6v-4H4z" /></svg>
+  ];
+
+  // --- Loading Simulation Logic ---
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (appState === 'generating') {
+      setLoadingProgress(0);
+      setLoadingIconIndex(0);
+
+      const startTime = Date.now();
+      const duration = 30000; // 30 seconds
+
+      interval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min((elapsed / duration) * 100, 99);
+        setLoadingProgress(progress);
+
+        // Change icon every 5 seconds
+        const currentIconIdx = Math.floor(elapsed / 5000) % LOADING_ICONS.length;
+        setLoadingIconIndex(currentIconIdx);
+      }, 100);
+    }
+    return () => clearInterval(interval);
+  }, [appState]);
+
+  // --- Carousel Navigation ---
   const [currentStyleIndex, setCurrentStyleIndex] = useState(0);
+
+  useEffect(() => {
+    if (selectedStyle) {
+      setCurrentStyleIndex(STYLES.findIndex(s => s.id === selectedStyle.id));
+    }
+  }, [selectedStyle]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -437,17 +485,43 @@ export default function App() {
   if (appState === 'generating') {
     return (
       <div className="h-screen w-full bg-zinc-950 flex flex-col items-center justify-center p-8 text-center">
-        <div className="relative w-40 h-40 mb-10">
-          <div className="absolute inset-0 border-4 border-zinc-800 rounded-full"></div>
-          <div className="absolute inset-0 border-4 border-amber-500 rounded-full border-t-transparent animate-spin"></div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <img src={selectedStyle?.thumbnail} className="w-24 h-24 rounded-full opacity-50 grayscale blur-[1px]" />
+        <div className="relative w-48 h-48 mb-10">
+          <div className="absolute inset-0 border-[6px] border-zinc-900 rounded-full"></div>
+          {/* Circular Progress Bar */}
+          <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+            <circle
+              cx="96"
+              cy="96"
+              r="90"
+              stroke="currentColor"
+              strokeWidth="6"
+              fill="transparent"
+              className="text-amber-600"
+              strokeDasharray={565.48}
+              strokeDashoffset={565.48 - (565.48 * loadingProgress) / 100}
+              strokeLinecap="round"
+            />
+          </svg>
+
+          <div className="absolute inset-0 flex items-center justify-center animate-pulse">
+            {LOADING_ICONS[loadingIconIndex]}
           </div>
         </div>
-        <h2 className="text-3xl brand-font text-white mb-2 animate-pulse">Processing...</h2>
-        <p className="text-amber-500 font-bold text-lg mb-4">{processingStep}</p>
-        <div className="w-full max-w-xs bg-zinc-900 h-2 rounded-full overflow-hidden">
-          <div className="h-full bg-amber-600 animate-[pulse_1s_ease-in-out_infinite] w-2/3"></div>
+
+        <h2 className="text-4xl brand-font text-white mb-2 tracking-widest">DECODING...</h2>
+        <p className="text-amber-500 font-bold text-xl mb-8 h-8">{processingStep}</p>
+
+        <div className="w-full max-w-sm">
+          <div className="flex justify-between items-end mb-2">
+            <span className="text-zinc-500 text-xs font-bold uppercase tracking-tighter">Identity Reconstruction</span>
+            <span className="text-amber-500 text-2xl font-black italic">{Math.floor(loadingProgress)}%</span>
+          </div>
+          <div className="w-full bg-zinc-900 h-3 rounded-full overflow-hidden border border-white/5 p-[2px]">
+            <div
+              className="h-full bg-gradient-to-r from-amber-700 via-amber-500 to-amber-400 rounded-full transition-all duration-300 ease-linear shadow-[0_0_15px_rgba(245,158,11,0.4)]"
+              style={{ width: `${loadingProgress}%` }}
+            ></div>
+          </div>
         </div>
       </div>
     );

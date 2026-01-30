@@ -5,7 +5,7 @@ export const STYLES: StyleOption[] = [
     id: 1,
     title: "Futuristic Archaeologist",
     description: "Sci-fi gear at a Giza Pyramid with glowing circuits.",
-    thumbnail: "https://picsum.photos/id/101/400/500",
+    thumbnail: "/1.png",
     prompt: `
     {
       "reference": "use uploaded image as facial reference, preserve original face and identity exactly",
@@ -31,7 +31,7 @@ export const STYLES: StyleOption[] = [
     id: 2,
     title: "3D Vinyl Toy",
     description: "Cute Pixar-style collectible figure.",
-    thumbnail: "https://picsum.photos/id/102/400/500",
+    thumbnail: "/2.png",
     prompt: `
     {
       "reference": "use uploaded image as facial reference, preserve original face and identity exactly",
@@ -54,7 +54,7 @@ export const STYLES: StyleOption[] = [
     id: 3,
     title: "Keeper of Time",
     description: "Surreal portrait with hourglass and dissolving sand.",
-    thumbnail: "https://picsum.photos/id/103/400/500",
+    thumbnail: "/3.png",
     prompt: `A hyper-realistic surreal portrait of the user (based on uploaded reference) acting as the Keeper of Time inside an ancient Egyptian tomb. The subject is holding a large, ornate antique hourglass.
     Instead of sand, the hourglass is filled with tiny crumbling glowing pyramids falling from the top bulb to the bottom.
     The subject's body is partially turning into swirling sand particles on the right side, blending into the desert wind.
@@ -68,7 +68,7 @@ export const STYLES: StyleOption[] = [
     id: 4,
     title: "The Map Illusion",
     description: "Optical illusion climbing out of a vintage map.",
-    thumbnail: "https://picsum.photos/id/104/400/500",
+    thumbnail: "/4.png",
     prompt: `
     {
       "subject": {
@@ -107,7 +107,7 @@ export const STYLES: StyleOption[] = [
     id: 5,
     title: "Journal Collage",
     description: "Sepia photo on a chaotic investigation board.",
-    thumbnail: "https://picsum.photos/id/106/400/500",
+    thumbnail: "/5.png",
     prompt: `
     {
       "variables": {
@@ -138,7 +138,7 @@ export const STYLES: StyleOption[] = [
     id: 6,
     title: "Tomb Triptych",
     description: "3-panel cinematic story of discovery.",
-    thumbnail: "https://picsum.photos/id/108/400/500",
+    thumbnail: "/6.png",
     prompt: `A horizontal triptych collage (3 panels) depicting a narrative of discovery in an Egyptian tomb. Photorealistic cinematic style.
     Left Panel (The Search):
     The subject (user reference) stands in a narrow, dark stone corridor, holding a flaming torch high. Exploring.

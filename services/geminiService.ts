@@ -7,22 +7,23 @@ export const generateArchaeologyImage = async (
   // Ensure we have an API key selected
   // @ts-ignore - aistudio is injected by the environment
   if (window.aistudio && window.aistudio.hasSelectedApiKey) {
-      // @ts-ignore
-      const hasKey = await window.aistudio.hasSelectedApiKey();
-      if (!hasKey) {
-          throw new Error("API Key not selected");
-      }
+    // @ts-ignore
+    const hasKey = await window.aistudio.hasSelectedApiKey();
+    if (!hasKey) {
+      throw new Error("API Key not selected");
+    }
   }
 
   // Create a new instance to pick up the injected key
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  
+  const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+  const ai = new GoogleGenAI({ apiKey: apiKey || "" });
+
   // Clean the base64 string
   const cleanBase64 = imageBase64.replace(/^data:image\/(png|jpg|jpeg);base64,/, "");
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-image-preview',
+      model: 'gemini-1.5-flash', // Standard stable model for image processing
       contents: {
         parts: [
           {
@@ -34,7 +35,7 @@ export const generateArchaeologyImage = async (
           {
             inlineData: {
               data: cleanBase64,
-              mimeType: 'image/jpeg' 
+              mimeType: 'image/jpeg'
             }
           }
         ]

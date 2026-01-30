@@ -20,16 +20,39 @@ const applyOverlay = (baseImageStr: string): Promise<string> => {
       const ctx = canvas.getContext('2d');
       if (!ctx) return failSafe("No Canvas Context");
 
-      // Set canvas to match the AI generated image size
-      canvas.width = baseImg.naturalWidth;
-      canvas.height = baseImg.naturalHeight;
+      // Calculate 4:5 cropping (Target Ratio = 0.8)
+      // Since Gemini returns 3:4 (0.75), which is narrower,
+      // we crop the height to achieve 4:5.
+      const targetRatio = 0.8;
+      const originalWidth = baseImg.naturalWidth;
+      const originalHeight = baseImg.naturalHeight;
 
-      // 1. Draw the AI Image
-      ctx.drawImage(baseImg, 0, 0);
+      let drawWidth = originalWidth;
+      let drawHeight = originalWidth / targetRatio;
+      let offsetY = (originalHeight - drawHeight) / 2;
+      let offsetX = 0;
+
+      // Fallback if for some reason the image is wider than 4:5
+      if (drawHeight > originalHeight) {
+        drawHeight = originalHeight;
+        drawWidth = originalHeight * targetRatio;
+        offsetX = (originalWidth - drawWidth) / 2;
+        offsetY = 0;
+      }
+
+      canvas.width = drawWidth;
+      canvas.height = drawHeight;
+
+      // 1. Draw the AI Image with cropping to 4:5
+      ctx.drawImage(
+        baseImg,
+        offsetX, offsetY, drawWidth, drawHeight, // Source
+        0, 0, drawWidth, drawHeight               // Destination
+      );
 
       // 2. Load and Draw the Overlay
       overlayImg.onload = () => {
-        // Draw overlay stretched to fit the base image perfectly
+        // Draw overlay stretched to fit the 4:5 image perfectly
         ctx.drawImage(overlayImg, 0, 0, canvas.width, canvas.height);
 
         try {

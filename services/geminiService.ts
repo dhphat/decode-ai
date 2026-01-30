@@ -28,7 +28,9 @@ export const generateArchaeologyImage = async (
         parts: [
           {
             text: `Follow these instructions strictly to generate an image. 
-            Aspect Ratio Requirement: The output image MUST act as a 4:5 portrait ratio structurally, even if the file is 3:4.
+            Aspect Ratio Requirement: The output image MUST act as a 4:5 portrait ratio structurally. 
+            Ensure all important elements and the main subject are contained within the 4:5 central area, 
+            as any parts outside this ratio will be cropped.
             
             Style Prompt: ${prompt}`
           },

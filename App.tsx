@@ -466,13 +466,21 @@ export default function App() {
             </a>
           </div>
 
-          {/* Main Action Button (Restart) */}
-          <button
-            onClick={resetApp}
-            className="w-full max-w-lg mx-auto py-5 bg-amber-600 text-white text-xl rounded-xl font-bold text-center uppercase tracking-wide shadow-lg active:scale-95 transition-transform"
-          >
-            Start New Session
-          </button>
+          {/* QR Code and Actions */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 max-w-lg mx-auto w-full bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
+            {downloadUrl && (
+              <div className="bg-white p-2 rounded-lg shadow-lg">
+                <QRCodeCanvas value={downloadUrl} size={120} />
+                <p className="text-black text-[10px] font-bold text-center mt-1 uppercase">Scan to Download</p>
+              </div>
+            )}
+            <button
+              onClick={resetApp}
+              className="flex-1 py-5 bg-amber-600 text-white text-xl rounded-xl font-bold text-center uppercase tracking-wide shadow-lg active:scale-95 transition-transform w-full"
+            >
+              Start New Session
+            </button>
+          </div>
         </div>
 
         {/* Result Image */}

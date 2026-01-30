@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { STYLES } from './constants';
 import { StyleOption, AppState } from './types';
 import { generateArchaeologyImage } from './services/geminiService';
+import { uploadImageToFirebase } from './services/storageService';
+import { QRCodeCanvas } from 'qrcode.react';
 
 // Helper function to merge overlay image onto the base image
 const applyOverlay = (baseImageStr: string): Promise<string> => {
@@ -83,6 +85,7 @@ export default function App() {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [apiKeyReady, setApiKeyReady] = useState<boolean>(false);
   const [processingStep, setProcessingStep] = useState<string>("");
 
@@ -237,6 +240,11 @@ export default function App() {
       setProcessingStep("Applying FTCVN Overlay...");
       const finalResult = await applyOverlay(rawResult);
       setGeneratedImage(finalResult);
+
+      setProcessingStep("Generating Share Link...");
+      const url = await uploadImageToFirebase(finalResult);
+      setDownloadUrl(url);
+
       setAppState('result');
     } catch (err) {
       console.error(err);

@@ -1,0 +1,7 @@
+{
+  "name": "FTCVN: Decode AI",
+  "description": "Transform yourself into an archaeological hero using AI.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

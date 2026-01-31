@@ -558,50 +558,32 @@ export default function App() {
     );
   }
 
-  // 5. Result View (Buttons at TOP)
+  // 5. Result View (ACTIONS AT TOP)
   if (appState === 'result' && generatedImage) {
     return (
       <div className="h-screen w-full bg-zinc-950 flex flex-col relative p-6 overflow-hidden">
-        {/* Result Image - PRIORITIZED */}
-        <div className="flex-1 flex items-center justify-center min-h-0 py-2">
-          <div className="relative h-full w-full max-w-lg rounded-xl overflow-hidden shadow-[0_0_60px_rgba(217,119,6,0.15)] border border-amber-900/30 bg-black">
-            <img src={generatedImage} alt="AI Result" className="w-full h-full object-contain" />
-          </div>
-        </div>
-
-        {/* COMPACT ACTIONS FOOTER */}
-        <div className="flex-none pb-6 pt-2 z-20">
-          <div className="flex items-center justify-center gap-4 max-w-lg mx-auto w-full bg-zinc-900/80 backdrop-blur-md p-3 rounded-2xl border border-zinc-800 shadow-2xl">
+        {/* COMPACT ACTIONS HEADER */}
+        <div className="flex-none pb-4 pt-2 z-20">
+          <div className="flex items-stretch justify-center gap-4 max-w-lg mx-auto w-full bg-zinc-900/80 backdrop-blur-md p-3 rounded-2xl border border-zinc-800 shadow-2xl">
             {downloadUrl && (
-              <div className="bg-white p-1 rounded-lg shrink-0">
+              <div className="bg-white p-1 rounded-lg shrink-0 flex items-center justify-center">
                 <QRCodeCanvas value={downloadUrl} size={80} />
               </div>
             )}
 
-            <div className="flex flex-col gap-2 flex-1">
-              <div className="flex gap-2">
-                <button
-                  onClick={resetApp}
-                  className="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-white text-sm rounded-xl font-bold uppercase tracking-wider border border-zinc-700 active:scale-95 transition-transform"
-                >
-                  New
-                </button>
-                <a
-                  href={generatedImage}
-                  download={`FTCVN-${Date.now()}.png`}
-                  className="p-3 bg-amber-600 text-white rounded-xl hover:bg-amber-500 active:scale-95 transition-transform flex items-center justify-center"
-                  title="Download"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
-                </a>
-              </div>
-              <button
-                onClick={resetApp}
-                className="w-full py-3 bg-amber-600 text-white text-sm rounded-xl font-bold uppercase tracking-wider shadow-lg active:scale-95 transition-transform"
-              >
-                Done
-              </button>
-            </div>
+            <button
+              onClick={resetApp}
+              className="flex-1 bg-amber-600 hover:bg-amber-500 text-white text-xl rounded-xl font-bold uppercase tracking-widest shadow-lg active:scale-95 transition-all flex items-center justify-center"
+            >
+              NEW
+            </button>
+          </div>
+        </div>
+
+        {/* Result Image - BELOW ACTIONS */}
+        <div className="flex-1 flex items-center justify-center min-h-0 pb-4">
+          <div className="relative h-full w-full max-w-lg rounded-xl overflow-hidden shadow-[0_0_60px_rgba(217,119,6,0.15)] border border-amber-900/30 bg-black">
+            <img src={generatedImage} alt="AI Result" className="w-full h-full object-contain" />
           </div>
         </div>
       </div>

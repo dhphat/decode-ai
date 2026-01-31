@@ -90,6 +90,26 @@ export default function App() {
   const [processingStep, setProcessingStep] = useState<string>("");
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingIconIndex, setLoadingIconIndex] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // --- Fullscreen Logic ---
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   const LOADING_ICONS = [
     // Compass
@@ -345,9 +365,20 @@ export default function App() {
 
         {/* TOP CONTROLS */}
         <div className="flex-none pt-12 pb-6 px-6 z-20 flex flex-col gap-6 bg-gradient-to-b from-black/90 to-transparent">
-          <header className="text-center">
+          <header className="text-center relative">
             <h1 className="text-3xl brand-font text-amber-500 tracking-wider">FTCVN: Decode AI</h1>
             <p className="text-zinc-400 text-sm mt-1 uppercase tracking-widest">Select Your Archetype</p>
+
+            <button
+              onClick={toggleFullscreen}
+              className="absolute top-0 right-0 p-3 bg-zinc-800/50 rounded-full border border-white/5 text-amber-500 active:scale-95 transition-all"
+            >
+              {isFullscreen ? (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" /></svg>
+              ) : (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 15v6h-6M3 9V3h6" /></svg>
+              )}
+            </button>
           </header>
 
           <button
@@ -531,43 +562,46 @@ export default function App() {
   if (appState === 'result' && generatedImage) {
     return (
       <div className="h-screen w-full bg-zinc-950 flex flex-col relative p-6 overflow-hidden">
-        {/* TOP CONTROLS */}
-        <div className="flex-none pt-8 pb-6 z-20 flex flex-col gap-4 bg-zinc-950">
-          <div className="flex justify-between items-center max-w-lg mx-auto w-full">
-            <h1 className="text-xl brand-font text-amber-500 uppercase tracking-widest">Identity Decoded</h1>
-
-            {/* Download Icon Button */}
-            <a
-              href={generatedImage}
-              download={`FTCVN-${Date.now()}.png`}
-              className="p-4 bg-zinc-800 text-amber-500 rounded-full border border-zinc-700 hover:bg-zinc-700 active:scale-95 transition-transform"
-              title="Download Image"
-            >
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
-            </a>
-          </div>
-
-          {/* QR Code and Actions */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6 max-w-lg mx-auto w-full bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
-            {downloadUrl && (
-              <div className="bg-white p-2 rounded-lg shadow-lg">
-                <QRCodeCanvas value={downloadUrl} size={120} />
-                <p className="text-black text-[10px] font-bold text-center mt-1 uppercase">Scan to Download</p>
-              </div>
-            )}
-            <button
-              onClick={resetApp}
-              className="flex-1 py-5 bg-amber-600 text-white text-xl rounded-xl font-bold text-center uppercase tracking-wide shadow-lg active:scale-95 transition-transform w-full"
-            >
-              Start New Session
-            </button>
+        {/* Result Image - PRIORITIZED */}
+        <div className="flex-1 flex items-center justify-center min-h-0 py-2">
+          <div className="relative h-full w-full max-w-lg rounded-xl overflow-hidden shadow-[0_0_60px_rgba(217,119,6,0.15)] border border-amber-900/30 bg-black">
+            <img src={generatedImage} alt="AI Result" className="w-full h-full object-contain" />
           </div>
         </div>
 
-        {/* Result Image */}
-        <div className="flex-1 flex items-center justify-center min-h-0 pb-8">
-          <div className="relative h-full w-full max-w-lg rounded-xl overflow-hidden shadow-[0_0_60px_rgba(217,119,6,0.15)] border border-amber-900/30 bg-black">
-            <img src={generatedImage} alt="AI Result" className="w-full h-full object-contain" />
+        {/* COMPACT ACTIONS FOOTER */}
+        <div className="flex-none pb-6 pt-2 z-20">
+          <div className="flex items-center justify-center gap-4 max-w-lg mx-auto w-full bg-zinc-900/80 backdrop-blur-md p-3 rounded-2xl border border-zinc-800 shadow-2xl">
+            {downloadUrl && (
+              <div className="bg-white p-1 rounded-lg shrink-0">
+                <QRCodeCanvas value={downloadUrl} size={80} />
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2 flex-1">
+              <div className="flex gap-2">
+                <button
+                  onClick={resetApp}
+                  className="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-white text-sm rounded-xl font-bold uppercase tracking-wider border border-zinc-700 active:scale-95 transition-transform"
+                >
+                  New
+                </button>
+                <a
+                  href={generatedImage}
+                  download={`FTCVN-${Date.now()}.png`}
+                  className="p-3 bg-amber-600 text-white rounded-xl hover:bg-amber-500 active:scale-95 transition-transform flex items-center justify-center"
+                  title="Download"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+                </a>
+              </div>
+              <button
+                onClick={resetApp}
+                className="w-full py-3 bg-amber-600 text-white text-sm rounded-xl font-bold uppercase tracking-wider shadow-lg active:scale-95 transition-transform"
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
       </div>
